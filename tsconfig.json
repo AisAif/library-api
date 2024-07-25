@@ -5,6 +5,7 @@
       "@test/*": ["test/*"],
       "@config/*": ["config/*"]
     },
+    "newLine": "crlf",
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
