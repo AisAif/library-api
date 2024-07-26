@@ -5,12 +5,13 @@ import appConfig from '@config/app.config';
 import databaseConfig from '@config/database.config';
 import { AuthModule } from '@/auth/auth.module';
 import { UsersModule } from '@/users/users.module';
+import jwtConfig from '@config/jwt.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig],
+      load: [appConfig, databaseConfig, jwtConfig],
     }),
     DatabaseModule,
     AuthModule,
