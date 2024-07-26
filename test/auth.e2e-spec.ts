@@ -4,7 +4,7 @@ import { Test } from '@nestjs/testing';
 import { TestAppModule } from './test.app.module';
 import { DataSource } from 'typeorm';
 import { AuthModule } from '@/auth/auth.module';
-import { createTestUser } from './helpers/user-test.crud';
+import { createTestUser } from './helpers/user.helper';
 
 describe('Auth', () => {
   let app: INestApplication;
