@@ -10,7 +10,7 @@ export class UsersService {
   async save(user: User): Promise<User> {
     return this.usersRepository.save(user);
   }
-  async findOne(username: string): Promise<User> {
+  async findOne(username: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ username });
   }
 }
