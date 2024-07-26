@@ -5,6 +5,8 @@ import { TestAppModule } from './test.app.module';
 import { DataSource } from 'typeorm';
 import { AuthModule } from '@/auth/auth.module';
 import { createTestUser } from './helpers/user.helper';
+import { getAccessToken } from './helpers/auth.helper';
+import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
 
 describe('Auth', () => {
   let app: INestApplication;
@@ -16,6 +18,7 @@ describe('Auth', () => {
     }).compile();
     app = moduleRef.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalInterceptors(new ResponseInterceptor());
     await app.init();
     dataSource = app.get(DataSource);
   });
@@ -122,7 +125,7 @@ describe('Auth', () => {
         });
 
       expect(result.status).toBe(200);
-      expect(result.body).toHaveProperty('access_token');
+      expect(result.body.data).toHaveProperty('access_token');
       return;
     });
 
@@ -131,6 +134,29 @@ describe('Auth', () => {
         .post('/auth/login')
         .send()
         .expect(401);
+    });
+  });
+
+  describe('POST /auth/profile', () => {
+    beforeEach(async () => {
+      await createTestUser(dataSource);
+    });
+
+    it('should return 200', async () => {
+      const accessToken = await getAccessToken(app);
+      const result = await request(app.getHttpServer())
+        .get('/auth/profile')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(result.status).toBe(200);
+      expect(result.body.data).toHaveProperty('username');
+      expect(result.body.data).toHaveProperty('name');
+      expect(result.body.data).toHaveProperty('role');
+      return;
+    });
+
+    it('should return 401 when access token not provided or invalid', async () => {
+      return request(app.getHttpServer()).get('/auth/profile').expect(401);
     });
   });
 });
