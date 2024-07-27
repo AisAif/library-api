@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Library API",
-    "description": "Library API",
+    "description": "API For Your Book Collections",
     "version": "1.0.0"
   },
   "tags": [
@@ -61,6 +61,11 @@
         "tags": ["Auth"],
         "summary": "Get Profile",
         "operationId": "getProfile",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Authorization"
+          }
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/ProfileResponse"
@@ -70,10 +75,237 @@
           }
         }
       }
+    },
+    "/users/current": {
+      "patch": {
+        "tags": ["User"],
+        "summary": "Update User",
+        "operationId": "updateUser",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Authorization"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateUserRequest"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UpdateResponse"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          }
+        }
+      }
+    },
+    "/books": {
+      "post": {
+        "tags": ["Book"],
+        "summary": "Create Your Book Collection",
+        "operationId": "createBook",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Authorization"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateOrUpdateBookRequest"
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          }
+        }
+      },
+      "get": {
+        "tags": ["Book"],
+        "summary": "Get All Your Book Collections",
+        "operationId": "getBooks",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Authorization"
+          },
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Search"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BooksResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          }
+        }
+      }
+    },
+    "/books/{book_id}": {
+      "get": {
+        "tags": ["Book"],
+        "summary": "Get Your Book Collection",
+        "operationId": "getBook",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Authorization"
+          },
+          {
+            "$ref": "#/components/parameters/BookId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/BookResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Book"],
+        "summary": "Update Your Book Collection",
+        "operationId": "updateBook",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Authorization"
+          },
+          {
+            "$ref": "#/components/parameters/BookId"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateOrUpdateBookRequest"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UpdateResponse"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Book"],
+        "summary": "Delete Your Book Collection",
+        "operationId": "deleteBook",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Authorization"
+          },
+          {
+            "$ref": "#/components/parameters/BookId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/DeleteResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          },
+          "403": {
+            "$ref": "#/components/responses/ForbiddenResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "MetaSchema": {
+        "type": "object",
+        "properties": {
+          "itemsPerPage": {
+            "type": "number",
+            "example": 5
+          },
+          "totalItems": {
+            "type": "number",
+            "example": 10
+          },
+          "currentPage": {
+            "type": "number",
+            "example": 1
+          },
+          "sortBy": {
+            "type": "array",
+            "example": [["name", "DESC"]]
+          },
+          "search": {
+            "type": "string",
+            "example": "test"
+          },
+          "filter": {
+            "type": "object",
+            "example": {
+              "age": "$gte:3"
+            }
+          }
+        }
+      },
+      "LinksSchema": {
+        "type": "object",
+        "properties": {
+          "first": {
+            "type": "string",
+            "example": "http://localhost:3000/books?limit=5&page=1&sortBy=title:ASC&search=test&filter.status=$eq:available"
+          },
+          "previous": {
+            "type": "string",
+            "example": "http://localhost:3000/books?limit=5&page=1&sortBy=title:ASC&search=test&filter.status=$eq:available"
+          },
+          "current": {
+            "type": "string",
+            "example": "http://localhost:3000/books?limit=5&page=1&sortBy=title:ASC&search=test&filter.status=$eq:available"
+          },
+          "next": {
+            "type": "string",
+            "example": "http://localhost:3000/books?limit=5&page=2&sortBy=title:ASC&search=test&filter.status=$eq:available"
+          },
+          "last": {
+            "type": "string",
+            "example": "http://localhost:3000/books?limit=5&page=2&sortBy=title:ASC&search=test&filter.status=$eq:available"
+          }
+        }
+      },
       "RegisterSchema": {
         "type": "object",
         "properties": {
@@ -112,10 +344,56 @@
           "username": {
             "type": "string",
             "example": "test"
-          },
-          "role": {
+          }
+        }
+      },
+      "UpdateUserSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
             "type": "string",
-            "example": "user"
+            "example": "test"
+          },
+          "username": {
+            "type": "string",
+            "example": "test"
+          },
+          "password": {
+            "type": "string",
+            "example": "testtest"
+          },
+          "password_confirm": {
+            "type": "string",
+            "example": "testtest"
+          }
+        }
+      },
+      "BookSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "test"
+          },
+          "author": {
+            "type": "string",
+            "example": "test"
+          },
+          "status": {
+            "type": "string",
+            "example": "available"
+          },
+          "summary": {
+            "type": "string",
+            "example": "test"
+          },
+          "total_page": {
+            "type": "number",
+            "example": 99
+          },
+          "year": {
+            "type": "number",
+            "example": 2022
           }
         }
       }
@@ -137,6 +415,26 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/RegisterSchema"
+            }
+          }
+        }
+      },
+      "UpdateUserRequest": {
+        "description": "Update User",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserSchema"
+            }
+          }
+        }
+      },
+      "CreateOrUpdateBookRequest": {
+        "description": "Create or Update Book",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BookSchema"
             }
           }
         }
@@ -179,11 +477,55 @@
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "Unauthorized."
+                  "example": "Unauthorized"
                 },
                 "statusCode": {
                   "type": "number",
                   "example": 401
+                }
+              }
+            }
+          }
+        }
+      },
+      "ForbiddenResponse": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "statusCode": {
+                  "type": "number",
+                  "example": 403
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Forbidden resource"
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Forbidden"
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFoundResponse": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Not Found"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 404
                 }
               }
             }
@@ -199,7 +541,7 @@
               "properties": {
                 "message": {
                   "type": "string",
-                  "example": "Success."
+                  "example": "Success"
                 },
                 "statusCode": {
                   "type": "number",
@@ -228,7 +570,7 @@
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "Success."
+                  "example": "Success"
                 },
                 "statusCode": {
                   "type": "number",
@@ -241,8 +583,181 @@
             }
           }
         }
+      },
+      "UpdateResponse": {
+        "description": "Update",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Updated successfully"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                }
+              }
+            }
+          }
+        }
+      },
+      "DeleteResponse": {
+        "description": "Delete",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Deleted successfully"
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                }
+              }
+            }
+          }
+        }
+      },
+      "UsersResponse": {
+        "description": "Get All Users",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Success."
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserSchema"
+                  }
+                },
+                "meta": {
+                  "$ref": "#/components/schemas/MetaSchema"
+                },
+                "links": {
+                  "$ref": "#/components/schemas/LinksSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "BooksResponse": {
+        "description": "Get All Books",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Success."
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BookSchema"
+                  }
+                },
+                "meta": {
+                  "$ref": "#/components/schemas/MetaSchema"
+                },
+                "links": {
+                  "$ref": "#/components/schemas/LinksSchema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "BookResponse": {
+        "description": "Get Your Book Collection",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Success."
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "data": {
+                  "$ref": "#/components/schemas/BookSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "Authorization": {
+        "name": "Authorization",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "Bearer {token}"
+        }
+      },
+      "BookId": {
+        "name": "bookId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "1"
+        }
+      },
+      "Page": {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "example": 1
+        }
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "example": 5
+        }
+      },
+      "Search": {
+        "name": "search",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "example": "test"
+        }
       }
     }
   }
 }
-
