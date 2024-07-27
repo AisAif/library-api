@@ -1,0 +1,248 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Library API",
+    "description": "Library API",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Auth API"
+    },
+    {
+      "name": "User",
+      "description": "User API"
+    },
+    {
+      "name": "Book",
+      "description": "Book API"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Register",
+        "operationId": "register",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/RegisterRequest"
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login",
+        "operationId": "login",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/LoginRequest"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/LoginResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          }
+        }
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Get Profile",
+        "operationId": "getProfile",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ProfileResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedResponse"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RegisterSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "password_confirm": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginSchema": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "UserSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "test"
+          },
+          "username": {
+            "type": "string",
+            "example": "test"
+          },
+          "role": {
+            "type": "string",
+            "example": "user"
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "RegisterRequest": {
+        "description": "Register",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/LoginSchema"
+            }
+          }
+        }
+      },
+      "LoginRequest": {
+        "description": "Login",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/RegisterSchema"
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequestResponse": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Bad Request."
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 400
+                },
+                "message": {
+                  "type": "array",
+                  "example": [
+                    "name must be longer than or equal to 3 characters",
+                    "name should not be empty"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "UnauthorizedResponse": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Unauthorized."
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 401
+                }
+              }
+            }
+          }
+        }
+      },
+      "LoginResponse": {
+        "description": "Login",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Success."
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE2NjUwOTQ3NjksImV4cCI6MTY2NTA5NDk2OX0.6hC9WbWx8oXwEh6rZwVpV5kLs9aJ8hLQ"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ProfileResponse": {
+        "description": "Profile",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Success."
+                },
+                "statusCode": {
+                  "type": "number",
+                  "example": 200
+                },
+                "data": {
+                  "$ref": "#/components/schemas/UserSchema"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
