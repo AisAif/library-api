@@ -5,6 +5,7 @@ import { UsersService } from '@/users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { UserData } from '@/users/users.interface';
 import { JwtService } from '@nestjs/jwt';
+import { UpdateUserDTO } from './dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -51,5 +52,21 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload);
+  }
+
+  async updateProfile(
+    username: string,
+    updateUserDto: UpdateUserDTO,
+  ): Promise<string> {
+    try {
+      const user = await this.usersService.update(username, updateUserDto);
+      const result = this.login({
+        name: user.name,
+        username: user.username,
+      });
+      return result;
+    } catch (err) {
+      throw err;
+    }
   }
 }
