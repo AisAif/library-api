@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -11,6 +12,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Public } from './decorators/public.decorator';
+import { UpdateUserDTO } from './dto/update-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -36,7 +38,25 @@ export class AuthController {
   }
 
   @Get('profile')
+  @HttpCode(200)
   profile(@Req() req) {
     return req.user;
+  }
+
+  @Patch('profile')
+  @HttpCode(200)
+  async updateProfile(@Req() req, @Body() updateUserDto: UpdateUserDTO) {
+    try {
+      const access_token = await this.authService.updateProfile(
+        req.user.username,
+        updateUserDto,
+      );
+
+      return {
+        access_token,
+      };
+    } catch (err) {
+      throw err;
+    }
   }
 }
