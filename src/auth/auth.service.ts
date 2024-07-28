@@ -15,12 +15,12 @@ export class AuthService {
 
   async register(user: RegisterDto) {
     if (user.password !== user.password_confirm) {
-      throw new BadRequestException('password not match');
+      throw new BadRequestException(['password not match']);
     }
 
     const result = await this.usersService.findOne(user.username);
     if (result) {
-      throw new BadRequestException('username already exists');
+      throw new BadRequestException(['username already exists']);
     }
 
     user.password = await bcrypt.hash(user.password, 10);
@@ -41,7 +41,6 @@ export class AuthService {
     return {
       name: user.name,
       username: user.username,
-      role: user.role,
     };
   }
 
@@ -49,7 +48,6 @@ export class AuthService {
     const payload = {
       username: user.username,
       name: user.name,
-      role: user.role,
     };
 
     return this.jwtService.sign(payload);
