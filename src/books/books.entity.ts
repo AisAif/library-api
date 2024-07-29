@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-enum BookStatus {
+export enum BookStatus {
   READ = 'read',
   IN_READING = 'in_reading',
   UNREAD = 'unread',
