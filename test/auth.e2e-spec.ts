@@ -3,7 +3,6 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestAppModule } from './test.app.module';
 import { DataSource } from 'typeorm';
-import { AuthModule } from '@/auth/auth.module';
 import { createTestUser } from './helpers/user.helper';
 import { getAccessToken } from './helpers/auth.helper';
 import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
@@ -16,7 +15,7 @@ describe('Auth', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [TestAppModule, AuthModule],
+      imports: [TestAppModule],
     }).compile();
     app = moduleRef.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
@@ -25,15 +24,15 @@ describe('Auth', () => {
     dataSource = app.get(DataSource);
   });
 
-  afterEach(async () => {
-    return Promise.all([dataSource.query('DELETE FROM users')]);
-  });
-
   afterAll(async () => {
     return Promise.all([dataSource.destroy(), app.close()]);
   });
 
   describe('POST /auth/register', () => {
+    afterEach(async () => {
+      return Promise.all([dataSource.query('DELETE FROM users')]);
+    });
+
     it('should return 201', async () => {
       const result = await request(app.getHttpServer())
         .post('/auth/register')
@@ -125,6 +124,10 @@ describe('Auth', () => {
       );
     });
 
+    afterEach(async () => {
+      return Promise.all([dataSource.query('DELETE FROM users')]);
+    });
+
     it('should return 200 and access token', async () => {
       const result = await request(app.getHttpServer())
         .post('/auth/login')
@@ -158,6 +161,10 @@ describe('Auth', () => {
       );
     });
 
+    afterEach(async () => {
+      return Promise.all([dataSource.query('DELETE FROM users')]);
+    });
+
     it('should return 200', async () => {
       const accessToken = await getAccessToken('test', 'testtest', app);
       const result = await request(app.getHttpServer())
@@ -185,6 +192,10 @@ describe('Auth', () => {
         },
         dataSource,
       );
+    });
+
+    afterEach(async () => {
+      return Promise.all([dataSource.query('DELETE FROM users')]);
     });
 
     it('should return 200', async () => {
