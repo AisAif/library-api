@@ -9,6 +9,7 @@ import jwtConfig from '@config/jwt.config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { JwtStrategy } from '@/auth/strategies/jwt.strategy';
+import { BooksModule } from './books/books.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { JwtStrategy } from '@/auth/strategies/jwt.strategy';
     DatabaseModule,
     AuthModule,
     UsersModule,
+    BooksModule,
   ],
   controllers: [],
   providers: [
