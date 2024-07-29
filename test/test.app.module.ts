@@ -18,7 +18,6 @@ import { AppModule } from './../src/app.module';
       database: process.env.DATABASE_NAME,
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
       synchronize: true,
-      dropSchema: true,
     }),
     AppModule,
   ],
