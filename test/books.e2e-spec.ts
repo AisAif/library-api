@@ -139,4 +139,97 @@ describe('Auth', () => {
       return;
     });
   });
+
+  describe('GET /books/:id', () => {
+    let book: Book;
+
+    beforeEach(async () => {
+      const user = await createTestUser(
+        {
+          name: 'test',
+          username: 'test',
+          password: 'testtest',
+        },
+        dataSource,
+      );
+
+      book = await createTestBook(
+        {
+          title: 'test',
+          author: 'test',
+          year: '2003',
+          total_page: 99,
+          summary: 'test',
+          user: user,
+        },
+        dataSource,
+      );
+    });
+
+    afterEach(async () => {
+      await dataSource.query('DELETE FROM books');
+      await dataSource.query('DELETE FROM users');
+    });
+
+    it('should return 200', async () => {
+      const accessToken = await getAccessToken('test', 'testtest', app);
+      const result = await request(app.getHttpServer())
+        .get('/books/' + book.id)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(result.status).toBe(200);
+      expect(result.body.data).toStrictEqual({
+        id: book.id,
+        title: book.title,
+        author: book.author,
+        year: book.year,
+        total_page: book.total_page,
+        summary: book.summary,
+        status: book.status,
+        created_at: book.created_at.toISOString(),
+        updated_at: book.updated_at.toISOString(),
+      });
+      return;
+    });
+
+    it('should return 404 when id not found', async () => {
+      const accessToken = await getAccessToken('test', 'testtest', app);
+      const result = await request(app.getHttpServer())
+        .get('/books/' + book.id + 1)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(result.status).toBe(404);
+      return;
+    });
+
+    it('should return 404 when book does not belong to user', async () => {
+      const anotherUser = await createTestUser(
+        {
+          name: 'test2',
+          username: 'test2',
+          password: 'test2',
+        },
+        dataSource,
+      );
+
+      const anotherBook = await createTestBook(
+        {
+          title: 'test2',
+          author: 'test2',
+          total_page: 99,
+          user: anotherUser,
+          year: '2003',
+        },
+        dataSource,
+      );
+
+      const accessToken = await getAccessToken('test', 'testtest', app);
+      const result = await request(app.getHttpServer())
+        .get('/books/' + anotherBook.id)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(result.status).toBe(404);
+      return;
+    });
+  });
 });
