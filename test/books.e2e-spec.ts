@@ -6,7 +6,7 @@ import { DataSource } from 'typeorm';
 import { createTestUser } from './helpers/user.helper';
 import { getAccessToken } from './helpers/auth.helper';
 import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
-import { Book } from '@/books/books.entity';
+import { Book, BookStatus } from '@/books/books.entity';
 import { createTestBook } from './helpers/book.helpers';
 
 describe('Auth', () => {
@@ -278,6 +278,19 @@ describe('Auth', () => {
       return;
     });
 
+    it('should return 200 when just updating status', async () => {
+      const accessToken = await getAccessToken('test', 'testtest', app);
+      const result = await request(app.getHttpServer())
+        .patch('/books/' + book.id)
+        .send({
+          status: BookStatus.IN_READING,
+        })
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(result.status).toBe(200);
+      return;
+    });
+
     it('should return 400 when form is invalid', async () => {
       const accessToken = await getAccessToken('test', 'testtest', app);
       const result = await request(app.getHttpServer())
@@ -342,7 +355,7 @@ describe('Auth', () => {
     });
   });
 
-  describe('PATCH /books/:id', () => {
+  describe('DELETE /books/:id', () => {
     let book: Book;
 
     beforeEach(async () => {
