@@ -1,4 +1,9 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Book } from './books.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from '@/users/users.service';
@@ -13,20 +18,14 @@ export class BooksService {
   ) {}
 
   async create(username: string, bookData: CreateBookDto): Promise<void> {
-    const book = await this.booksRepository.save(bookData);
-
     const user = await this.usersService.findOne(username);
     if (!user) {
       throw new UnauthorizedException();
     }
 
-    book.title = bookData.title;
-    book.author = bookData.author;
-    book.total_page = bookData.total_page;
-    book.year = bookData.year;
+    const book = { ...bookData, user };
 
-    user.books = [book];
-    await this.usersService.save(user);
+    await this.booksRepository.save(book);
   }
   async findAll(
     username: string,
