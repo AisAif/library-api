@@ -104,6 +104,8 @@ export class BooksService {
       throw new NotFoundException();
     }
 
+    book.updated_at = new Date();
+
     await this.booksRepository.save({ ...book, ...bookData });
   }
 
