@@ -7,6 +7,7 @@ import { createTestUser } from './helpers/user.helper';
 import { getAccessToken } from './helpers/auth.helper';
 import { ResponseInterceptor } from '@/common/interceptors/response.interceptor';
 import { Book } from '@/books/books.entity';
+import { createTestBook } from './helpers/book.helpers';
 
 describe('Auth', () => {
   let app: INestApplication;
@@ -40,10 +41,8 @@ describe('Auth', () => {
     });
 
     afterEach(async () => {
-      return Promise.all([
-        dataSource.query('DELETE FROM books'),
-        dataSource.query('DELETE FROM users'),
-      ]);
+      await dataSource.query('DELETE FROM books');
+      await dataSource.query('DELETE FROM users');
     });
 
     it('should return 201', async () => {
@@ -96,6 +95,48 @@ describe('Auth', () => {
           error: 'Bad Request',
           statusCode: 400,
         });
+    });
+  });
+
+  describe('GET /books', () => {
+    beforeEach(async () => {
+      const user = await createTestUser(
+        {
+          name: 'test',
+          username: 'test',
+          password: 'testtest',
+        },
+        dataSource,
+      );
+
+      await createTestBook(
+        {
+          title: 'test',
+          author: 'test',
+          year: '2003',
+          total_page: 99,
+          summary: 'test',
+          user: user,
+        },
+        dataSource,
+      );
+    });
+
+    afterEach(async () => {
+      await dataSource.query('DELETE FROM books');
+      await dataSource.query('DELETE FROM users');
+    });
+
+    it('should return 200', async () => {
+      const accessToken = await getAccessToken('test', 'testtest', app);
+      const result = await request(app.getHttpServer())
+        .get('/books')
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(result.status).toBe(200);
+      expect(result.body.data.data.length).toBe(1);
+      expect(result.body.data.data[0].title).toBe('test');
+      return;
     });
   });
 });
