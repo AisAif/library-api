@@ -66,4 +66,18 @@ export class BooksService {
       ],
     });
   }
+
+  async findOne(username: string, id: number): Promise<Book> {
+    const book = await this.booksRepository.findOne({
+      where: {
+        id,
+        user: { username },
+      },
+    });
+    if (!book) {
+      throw new NotFoundException();
+    }
+
+    return book;
+  }
 }
