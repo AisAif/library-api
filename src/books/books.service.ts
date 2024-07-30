@@ -106,4 +106,20 @@ export class BooksService {
 
     await this.booksRepository.save({ ...book, ...bookData });
   }
+
+  async remove(username: string, id: number): Promise<void> {
+    const user = await this.usersService.findOne(username);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const result = await this.booksRepository.delete({
+      id,
+      user: { username },
+    });
+
+    if (result.affected < 1) {
+      throw new NotFoundException();
+    }
+  }
 }
