@@ -341,4 +341,56 @@ describe('Auth', () => {
       return;
     });
   });
+
+  describe('PATCH /books/:id', () => {
+    let book: Book;
+
+    beforeEach(async () => {
+      const user = await createTestUser(
+        {
+          name: 'test',
+          username: 'test',
+          password: 'testtest',
+        },
+        dataSource,
+      );
+
+      book = await createTestBook(
+        {
+          title: 'test',
+          author: 'test',
+          year: '2003',
+          total_page: 99,
+          summary: 'test',
+          user: user,
+        },
+        dataSource,
+      );
+    });
+
+    afterEach(async () => {
+      await dataSource.query('DELETE FROM books');
+      await dataSource.query('DELETE FROM users');
+    });
+
+    it('should return 200', async () => {
+      const accessToken = await getAccessToken('test', 'testtest', app);
+      const result = await request(app.getHttpServer())
+        .delete('/books/' + book.id)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(result.status).toBe(200);
+      return;
+    });
+
+    it('should return 400 when id not found or not belong to user', async () => {
+      const accessToken = await getAccessToken('test', 'testtest', app);
+      const result = await request(app.getHttpServer())
+        .delete('/books/' + book.id + 1)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      expect(result.status).toBe(404);
+      return;
+    });
+  });
 });
