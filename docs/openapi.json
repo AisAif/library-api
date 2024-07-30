@@ -11,10 +11,6 @@
       "description": "Auth API"
     },
     {
-      "name": "User",
-      "description": "User API"
-    },
-    {
       "name": "Book",
       "description": "Book API"
     }
@@ -78,9 +74,9 @@
     },
     "/users/current": {
       "patch": {
-        "tags": ["User"],
-        "summary": "Update User",
-        "operationId": "updateUser",
+        "tags": ["Auth"],
+        "summary": "Update Profile",
+        "operationId": "updateProfile",
         "parameters": [
           {
             "$ref": "#/components/parameters/Authorization"
@@ -113,7 +109,7 @@
           }
         ],
         "requestBody": {
-          "$ref": "#/components/requestBodies/CreateOrUpdateBookRequest"
+          "$ref": "#/components/requestBodies/CreateBookRequest"
         },
         "responses": {
           "201": {
@@ -124,9 +120,6 @@
           },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
-          },
-          "403": {
-            "$ref": "#/components/responses/ForbiddenResponse"
           }
         }
       },
@@ -178,9 +171,6 @@
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
           },
-          "403": {
-            "$ref": "#/components/responses/ForbiddenResponse"
-          },
           "404": {
             "$ref": "#/components/responses/NotFoundResponse"
           }
@@ -199,7 +189,7 @@
           }
         ],
         "requestBody": {
-          "$ref": "#/components/requestBodies/CreateOrUpdateBookRequest"
+          "$ref": "#/components/requestBodies/CreateBookRequest"
         },
         "responses": {
           "200": {
@@ -210,9 +200,6 @@
           },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
-          },
-          "403": {
-            "$ref": "#/components/responses/ForbiddenResponse"
           },
           "404": {
             "$ref": "#/components/responses/NotFoundResponse"
@@ -237,9 +224,6 @@
           },
           "401": {
             "$ref": "#/components/responses/UnauthorizedResponse"
-          },
-          "403": {
-            "$ref": "#/components/responses/ForbiddenResponse"
           },
           "404": {
             "$ref": "#/components/responses/NotFoundResponse"
@@ -381,7 +365,8 @@
           },
           "status": {
             "type": "string",
-            "example": "available"
+            "enum": ["unread", "in_reading", "read"],
+            "example": "unread"
           },
           "summary": {
             "type": "string",
@@ -392,8 +377,71 @@
             "example": 99
           },
           "year": {
+            "type": "string",
+            "example": "2022"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2022-03-30T16:12:01.000Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "example": "2022-03-30T16:12:01.000Z"
+          }
+        }
+      },
+      "CreateBookSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "test"
+          },
+          "author": {
+            "type": "string",
+            "example": "test"
+          },
+          "summary": {
+            "type": "string",
+            "example": "test"
+          },
+          "total_page": {
             "type": "number",
-            "example": 2022
+            "example": 99
+          },
+          "year": {
+            "type": "string",
+            "example": "2022"
+          }
+        }
+      },
+      "UpdateBookSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "test"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["unread", "in_reading", "read"],
+            "example": "unread"
+          },
+          "author": {
+            "type": "string",
+            "example": "test"
+          },
+          "summary": {
+            "type": "string",
+            "example": "test"
+          },
+          "total_page": {
+            "type": "number",
+            "example": 99
+          },
+          "year": {
+            "type": "string",
+            "example": "2022"
           }
         }
       }
@@ -429,12 +477,22 @@
           }
         }
       },
-      "CreateOrUpdateBookRequest": {
-        "description": "Create or Update Book",
+      "CreateBookRequest": {
+        "description": "Create Book",
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/BookSchema"
+              "$ref": "#/components/schemas/CreateBookSchema"
+            }
+          }
+        }
+      },
+      "UpdateBookRequest": {
+        "description": "Create Book",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateBookSchema"
             }
           }
         }
@@ -482,30 +540,6 @@
                 "statusCode": {
                   "type": "number",
                   "example": 401
-                }
-              }
-            }
-          }
-        }
-      },
-      "ForbiddenResponse": {
-        "description": "Forbidden",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "statusCode": {
-                  "type": "number",
-                  "example": 403
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Forbidden resource"
-                },
-                "error": {
-                  "type": "string",
-                  "example": "Forbidden"
                 }
               }
             }
@@ -672,16 +706,21 @@
                   "example": 200
                 },
                 "data": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/BookSchema"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BookSchema"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/MetaSchema"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/LinksSchema"
+                    }
                   }
-                },
-                "meta": {
-                  "$ref": "#/components/schemas/MetaSchema"
-                },
-                "links": {
-                  "$ref": "#/components/schemas/LinksSchema"
                 }
               }
             }
