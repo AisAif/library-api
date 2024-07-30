@@ -1,4 +1,5 @@
 import {
+  IsEnum,
   IsNumber,
   IsOptional,
   IsString,
@@ -6,12 +7,17 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+import { BookStatus } from '../books.entity';
 
 export class UpdateBookDto {
   @IsOptional()
   @IsString()
   @MinLength(3)
   title: string;
+
+  @IsOptional()
+  @IsEnum(BookStatus)
+  status: BookStatus;
 
   @IsOptional()
   @IsString()
