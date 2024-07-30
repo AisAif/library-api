@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -52,5 +53,11 @@ export class BooksController {
     @Body() book: UpdateBookDto,
   ) {
     await this.booksService.update(req.user.username, id, book);
+  }
+
+  @Delete(':id')
+  @HttpCode(200)
+  async delete(@Req() req, @Param('id', ParseIntPipe) id: number) {
+    await this.booksService.remove(req.user.username, id);
   }
 }
