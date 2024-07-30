@@ -5,12 +5,14 @@ import {
   HttpCode,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Req,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
+import { UpdateBookDto } from './dto/update-book.dto';
 
 @Controller('books')
 export class BooksController {
@@ -40,5 +42,15 @@ export class BooksController {
     } catch (error) {
       throw error;
     }
+  }
+
+  @Patch(':id')
+  @HttpCode(200)
+  async update(
+    @Req() req,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() book: UpdateBookDto,
+  ) {
+    await this.booksService.update(req.user.username, id, book);
   }
 }
