@@ -20,6 +20,6 @@ export class BooksController {
   @Get()
   @HttpCode(200)
   async findAll(@Req() req, @Paginate() query: PaginateQuery) {
-    return { data: await this.booksService.findAll(req.user.username, query) };
+    return this.booksService.findAll(req.user.username, query);
   }
 }
