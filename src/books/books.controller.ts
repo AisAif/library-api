@@ -1,4 +1,13 @@
-import { Body, Controller, Get, HttpCode, Post, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  ParseIntPipe,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
@@ -21,5 +30,15 @@ export class BooksController {
   @HttpCode(200)
   async findAll(@Req() req, @Paginate() query: PaginateQuery) {
     return this.booksService.findAll(req.user.username, query);
+  }
+
+  @Get(':id')
+  @HttpCode(200)
+  async findOne(@Req() req, @Param('id', ParseIntPipe) id: number) {
+    try {
+      return this.booksService.findOne(req.user.username, id);
+    } catch (error) {
+      throw error;
+    }
   }
 }
