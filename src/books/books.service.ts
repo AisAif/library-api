@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { UsersService } from '@/users/users.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { UpdateBookDto } from './dto/update-book.dto';
 
 @Injectable()
 export class BooksService {
@@ -27,6 +28,7 @@ export class BooksService {
 
     await this.booksRepository.save(book);
   }
+
   async findAll(
     username: string,
     query: PaginateQuery,
@@ -79,5 +81,29 @@ export class BooksService {
     }
 
     return book;
+  }
+
+  async update(
+    username: string,
+    bookId: number,
+    bookData: UpdateBookDto,
+  ): Promise<void> {
+    const user = await this.usersService.findOne(username);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const book = await this.booksRepository.findOne({
+      where: {
+        id: bookId,
+        user: { username },
+      },
+    });
+
+    if (!book) {
+      throw new NotFoundException();
+    }
+
+    await this.booksRepository.save({ ...book, ...bookData });
   }
 }
