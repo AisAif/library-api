@@ -70,9 +70,7 @@
             "$ref": "#/components/responses/UnauthorizedResponse"
           }
         }
-      }
-    },
-    "/users/current": {
+      },
       "patch": {
         "tags": ["Auth"],
         "summary": "Update Profile",
@@ -87,7 +85,7 @@
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/UpdateResponse"
+            "$ref": "#/components/responses/LoginResponse"
           },
           "400": {
             "$ref": "#/components/responses/BadRequestResponse"
