@@ -28,7 +28,10 @@ export class UsersService {
       throw new BadRequestException(['password not match']);
     }
 
-    if (await this.findOne(updateUserDTO.username)) {
+    if (
+      updateUserDTO.username &&
+      (await this.findOne(updateUserDTO.username))
+    ) {
       throw new BadRequestException(['username already exists']);
     }
 
