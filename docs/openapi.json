@@ -187,7 +187,7 @@
           }
         ],
         "requestBody": {
-          "$ref": "#/components/requestBodies/CreateBookRequest"
+          "$ref": "#/components/requestBodies/UpdateBookRequest"
         },
         "responses": {
           "200": {
@@ -486,7 +486,7 @@
         }
       },
       "UpdateBookRequest": {
-        "description": "Create Book",
+        "description": "Update Book",
         "content": {
           "application/json": {
             "schema": {
